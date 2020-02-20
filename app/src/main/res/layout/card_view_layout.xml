@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
+        >
+        <!-- Recycler view starts-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/card_bg"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            >
+
+            <ImageView
+                android:id="@+id/img_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@mipmap/ic_launcher"
+                android:layout_weight="80"
+                ></ImageView>
+
+            <TextView
+                android:layout_weight="20"
+                android:id="@+id/text_view_note"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="sans-serif-light"
+                android:padding="18dp"
+                android:text="Himanshu sharma"
+                android:gravity="center|start"
+                android:textColor="#000000"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="5dp"-->
+        <!--android:background="#e9e9e9" />-->
+
+    <!-- Recycler view end-->
+</LinearLayout>
