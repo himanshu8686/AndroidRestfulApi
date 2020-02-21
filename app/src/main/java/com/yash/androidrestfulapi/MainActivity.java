@@ -22,7 +22,7 @@ import com.yash.androidrestfulapi.utils.NetworkHelper;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private TextView tv_code,tv_network;
+    private TextView tv_code;
     private Button btn_run_code,btn_show_all;
     private boolean isNetworkOk;
     private ProgressBar progressBar_horizontal;
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initializeViews()
     {
-        tv_network=findViewById(R.id.tv_network);
+        //tv_network=findViewById(R.id.tv_network);
         tv_code=findViewById(R.id.tv_code);
         btn_run_code=findViewById(R.id.btn_run_code);
         btn_run_code.setOnClickListener(this);
@@ -81,7 +81,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initializeViews();
         isNetworkOk= NetworkHelper.isNetworkAvailable(this);
-        tv_network.setText("Network :"+isNetworkOk);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isNetworkOk==true)
+        {
+            Toast.makeText(this, "Network available", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
