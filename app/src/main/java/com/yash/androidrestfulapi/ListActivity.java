@@ -20,7 +20,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -41,8 +40,7 @@ import java.util.Map;
 
 import static com.yash.androidrestfulapi.MainActivity.JSON_URL;
 
-public class ListActivity extends AppCompatActivity
-{
+public class ListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Map<String, Bitmap>> {
 
     private RecyclerView recylcer_view;
     private DataAdapter dataAdapter;
@@ -65,17 +63,20 @@ public class ListActivity extends AppCompatActivity
             //Log.e("List activity",cityItems[0].getCityname());
             cityItemsList=Arrays.asList(cityItems);
             //  Log.e("lists",""+cityItemsList);
+            Toast.makeText(context, "Items downloaded"+cityItemsList.size(), Toast.LENGTH_SHORT).show();
+
             Collections.shuffle(cityItemsList);
-            showRecyclerData();
-            dataAdapter.notifyDataSetChanged();
+            LoaderManager.getInstance(ListActivity.this).initLoader(0,null,ListActivity.this).forceLoad();
+            //showRecyclerData();
+
             swipe_refresh.setRefreshing(false);
-//            Log.e("lists",cityItemsList.toString());
         }
     };
 
     private void showRecyclerData() {
-        dataAdapter=new DataAdapter(this,cityItemsList);
+        dataAdapter=new DataAdapter(this,cityItemsList, mBitmaps);
         recylcer_view.setAdapter(dataAdapter);
+        dataAdapter.notifyDataSetChanged();
     }
 
 
@@ -143,47 +144,74 @@ public class ListActivity extends AppCompatActivity
         swipe_refresh=findViewById(R.id.swipe_refresh);
     }
 
-//    private static class MyImageTask extends AsyncTaskLoader<Map<String,Bitmap>>
-//    {
-//
-//        private static final String PHOTO_BASE_URL="https://restwork.000webhostapp.com/restworkAndroidApi/images/";
-//        private static List<CityItem> mCityList;
-//
-//        public MyImageTask(@NonNull Context context,List<CityItem> cityItems) {
-//            super(context);
-//            mCityList=cityItems;
-//        }
-//
-//        @Nullable
-//        @Override
-//        public Map<String, Bitmap> loadInBackground()
-//        {
-//            Map<String ,Bitmap> map=new HashMap<>();
-//            for (CityItem item:mCityList)
-//            {
-//                String imageUrlString=PHOTO_BASE_URL+item.getImage();
-//                InputStream inputStream=null;
-//                try {
-//                    URL imageUrl=new URL(imageUrlString);
-//
-//                    inputStream= (InputStream) imageUrl.getContent();
-//                    Bitmap bitmap=BitmapFactory.decodeStream(inputStream);
-//                    map.put(item.getCityname(),bitmap);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                finally {
-//                    if (inputStream!=null)
-//                    {
-//                        try {
-//                            inputStream.close();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }
-//            return map;
-//        }
-//    }
+    @NonNull
+    @Override
+    public Loader<Map<String, Bitmap>> onCreateLoader(int id, @Nullable Bundle args)
+    {
+        progressBar_horizontal.setVisibility(View.VISIBLE);
+        return new MyImageTask(this,cityItemsList);
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Map<String, Bitmap>> loader, Map<String, Bitmap> bitmapMap)
+    {
+        mBitmaps=bitmapMap;
+        dataAdapter=new DataAdapter(this,cityItemsList,mBitmaps);
+        recylcer_view.setAdapter(dataAdapter);
+        showRecyclerData();
+        progressBar_horizontal.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Map<String, Bitmap>> loader) {
+
+    }
+
+    private static class MyImageTask extends AsyncTaskLoader<Map<String,Bitmap>>
+    {
+
+        private static final String PHOTO_BASE_URL = "https://restwork.000webhostapp.com/restworkAndroidApi/images/";
+        private static List<CityItem> mCityList;
+
+        public MyImageTask(@NonNull Context context,List<CityItem> cityItems)
+        {
+            super(context);
+            mCityList=cityItems;
+        }
+
+        @Nullable
+        @Override
+        public Map<String, Bitmap> loadInBackground()
+        {
+
+            Map<String,Bitmap> map =new HashMap<>();
+
+            for (CityItem item:mCityList)
+            {
+                String imageurl=PHOTO_BASE_URL+item.getImage();
+                System.out.println(imageurl);
+                InputStream inputStream=null;
+                try {
+                    URL imageUrl=new URL(imageurl);
+                    inputStream= (InputStream) imageUrl.getContent();
+                    Bitmap bitmap=BitmapFactory.decodeStream(inputStream);
+                    Bitmap bitmap1=Bitmap.createScaledBitmap(bitmap,300,300,false);
+                    map.put(item.getCityname(),bitmap1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    if (inputStream!=null)
+                    {
+                        try {
+                            inputStream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            return map;
+        }
+    }
 }

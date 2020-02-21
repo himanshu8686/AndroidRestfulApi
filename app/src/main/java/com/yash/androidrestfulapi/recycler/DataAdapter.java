@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.yash.androidrestfulapi.ListActivity;
 import com.yash.androidrestfulapi.R;
 import com.yash.androidrestfulapi.model.CityItem;
 
@@ -24,9 +23,10 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
     private List<CityItem> cityItemsList;
     private Map<String,Bitmap> mBitmaps;
 
-    public DataAdapter(Context context, List<CityItem> cityItemList) {
+    public DataAdapter(Context context, List<CityItem> cityItemList, Map<String, Bitmap> mBitmaps) {
         this.context = context;
         this.cityItemsList = cityItemList;
+        this.mBitmaps=mBitmaps;
     }
 
 
@@ -43,6 +43,8 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
     public void onBindViewHolder(@NonNull DataViewHolder holder, int position) {
         CityItem cityItem=cityItemsList.get(position);
         holder.text_view_note.setText(cityItem.getCityname());
+
+        holder.img_view.setImageBitmap(mBitmaps.get(cityItem.getCityname()));
     }
 
     @Override
